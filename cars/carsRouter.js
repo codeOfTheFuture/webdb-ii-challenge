@@ -4,6 +4,7 @@ const db = require('../data/db-config');
 
 const router = express.Router();
 
+// Get all car entries
 router.get('/', async (req, res) => {
   try {
     const cars = await db('cars');
@@ -15,6 +16,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get car entry by id
 router.get('/:id', async (req, res) => {
   const {
     params: { id },
@@ -33,6 +35,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Create a new car entry
 router.post('/', async (req, res) => {
   try {
     const carData = req.body;
@@ -46,6 +49,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Update a car entry by id
 router.put('/:id', async (req, res) => {
   const {
     params: { id },
@@ -63,6 +67,28 @@ router.put('/:id', async (req, res) => {
 
     res.status(500).json({
       message: 'Server failed to update car entry',
+    });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  const {
+    params: { id },
+  } = req;
+
+  try {
+    const deleteCarEntry = await db('cars')
+      .where({ id: id })
+      .del();
+
+    res
+      .status(200)
+      .json({ message: `${deleteCarEntry} was deleted successfully` });
+  } catch (error) {
+    console.log('Deleted car entry error', error);
+
+    res.status(500).json({
+      message: 'Server failed to delete the specified car entry',
     });
   }
 });
